@@ -1,96 +1,154 @@
-import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'main.dart';
+
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Slideshow extends StatefulWidget {
   @override
-  State<Slideshow> createState() => _SlideshowState();
+  _SlideshowState createState() => _SlideshowState();
+}
+
+class ImageConfig {
+  String source;
+  String path;
+
+  ImageConfig({required this.source, required this.path});
 }
 
 class _SlideshowState extends State<Slideshow> {
-  String dirPath = '';
-  List<File> _images = [];
+  int pageIndex = 0;
 
-  Future getImage(index) async {
-    var picture = await ImagePicker().pickImage(source: ImageSource.gallery);
+  List<ImageConfig> imgList = [
+    ImageConfig(
+        source: "http",
+        path:
+            'https://ma-hub.imgix.net/wp-images/2020/01/11034422/After-Effects-How-to-Create-Slideshow.jpg?w=800&h=400&auto=format')
+  ];
+  List<Widget> imageSliders = [];
+
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
     setState(() {
-      _images[index] = File(picture!.path);
-      dirPath = picture.path;
-      print('path');
-      print(dirPath);
+      //imgList.add(ImageConfig(source: "file", path: pickedFile.path));
+      if (pageIndex == 0)
+        imgList.add(ImageConfig(source: "file", path: pickedFile!.path));
+      else
+        imgList.insert(
+            pageIndex + 1, ImageConfig(source: "file", path: pickedFile!.path));
     });
   }
 
-  // Directory picture = getTemporaryDirectory() as Directory;
-  // String p = picture.path;
-  //
-  // Directory appDocDir = getApplicationDocumentsDirectory() as Directory;
-  // String appDocPath = appDocDir.path;
-
-  // List<File> _images = [];
-  // final picker = ImagePicker();
-  //
-  // Future getImage(int index) async {
-  //   final image = await picker.getImage(source: ImageSource.gallery);
-  //
-  //   setState(() {
-  //     _images[index] = File(image!.path);
-  //     print((image.path));
-  //   });
-  // }
-
-  // final List<String>  =  async [
-  //   'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
-  //   'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
-  //   'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
-  //   'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89719a0d55dd05e2deae4120227e6efc&auto=format&fit=crop&w=1953&q=80',
-  //   'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
-  //   'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
-  // ];
+  Future deleteImage() async {
+    setState(() {
+      //imgList.removeLast();
+      imgList.removeAt(pageIndex);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Slideshow'),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Center(
-              child: Text(
-                'Slider',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-              ),
-            ),
-          ),
-          Expanded(
-            child: CarouselSlider(
-              items: _images
-                  .map((items) => Container(
-                        child: Center(
-                          child: Image.file(
-                            items,
-                            fit: BoxFit.cover,
-                            width: 100,
+    imageSliders = imgList
+        .map(
+          (item) => Container(
+            child: Container(
+              margin: EdgeInsets.all(5.0),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  child: Stack(
+                    children: <Widget>[
+                      item.source == "http"
+                          ? Image.network(
+                              item.path,
+                              // fit: BoxFit.cover,
+                              width: double.maxFinite,
+                              height: double.maxFinite,
+                            )
+                          : Image.file(
+                              File(item.path),
+                              // fit: BoxFit.cover,
+                              width: double.maxFinite,
+                              height: double.maxFinite,
+                            ),
+                      Positioned(
+                        bottom: 0.0,
+                        left: 0.0,
+                        right: 0.0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Color.fromARGB(200, 0, 0, 0),
+                                Color.fromARGB(0, 0, 0, 0)
+                              ],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
                           ),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 20.0),
                         ),
-                      ))
-                  .toList(),
-              options: CarouselOptions(
-                autoPlay: true,
-                aspectRatio: 2.0,
-                enlargeCenterPage: true,
-              ),
+                      ),
+                    ],
+                  )),
             ),
           ),
-        ],
-      ),
-    );
+        )
+        .toList();
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Slideshow'),
+        ),
+        body: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CarouselSlider(
+                options: CarouselOptions(
+                    autoPlay: true,
+                    aspectRatio: 2.0,
+                    enlargeCenterPage: true,
+                    enlargeStrategy: CenterPageEnlargeStrategy.height,
+                    pauseAutoPlayOnManualNavigate: true,
+                    pauseAutoPlayOnTouch: true,
+                    scrollDirection: Axis.horizontal,
+                    onPageChanged: (index, reason) {
+                      pageIndex = index;
+                    }),
+                items: imageSliders,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  FlatButton(
+                    padding: EdgeInsets.all(8.0),
+                    splashColor: Colors.tealAccent,
+                    child: Row(
+                      children: <Widget>[
+                        Icon(FontAwesomeIcons.plus),
+                      ],
+                    ),
+                    onPressed: getImage,
+                  ),
+                  FlatButton(
+                    padding: EdgeInsets.all(8.0),
+                    splashColor: Colors.red,
+                    child: Row(
+                      children: <Widget>[
+                        Icon(FontAwesomeIcons.trashAlt),
+                      ],
+                    ),
+                    onPressed: deleteImage,
+                  ),
+                ],
+              )
+            ],
+          ),
+        ));
   }
 }

@@ -3,7 +3,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:test_camera/editor.dart';
 import 'package:test_camera/slideshow.dart';
-import 'package:test_camera/slideshow1.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -150,8 +149,7 @@ class _LandingScreenState extends State<LandingScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => ProductCarousel()),
+                        MaterialPageRoute(builder: (context) => Slideshow()),
                       );
                     },
                     child: Text('Slideshow'),
