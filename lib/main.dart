@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:test_camera/editor.dart';
 import 'package:test_camera/slideshow.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:test_camera/slideshow1.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -90,45 +90,76 @@ class _LandingScreenState extends State<LandingScreen> {
             _initialImageView(),
             Column(
               children: [
-                RaisedButton(
-                  onPressed: () {
-                    _showChoiceDialog(context);
-                  },
-                  child: Column(
-                    children: [
-                      Text('Select Image'),
-                    ],
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 30.0),
+                  width: 250.0,
+                  child: FlatButton(
+                    onPressed: () {
+                      _showChoiceDialog(context);
+                    },
+                    child: Column(
+                      children: [
+                        Text('Select Image'),
+                      ],
+                    ),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
-                RaisedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Slideshow()),
-                    );
-                  },
-                  child: Text('Slideshow'),
+                SizedBox(
+                  height: 15.0,
                 ),
-                RaisedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return Center(child: CircularProgressIndicator());
-                      },
-                    );
-                    new Future.delayed(new Duration(seconds: 2), () {
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 30.0),
+                  width: 250.0,
+                  child: FlatButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) {
+                          return Center(child: CircularProgressIndicator());
+                        },
+                      );
+                      new Future.delayed(new Duration(seconds: 2), () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ImagePainterExample(
+                                    filePath: dirPath,
+                                  )),
+                        );
+                      });
+                    },
+                    child: Text('Image Editor'),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                ),
+                SizedBox(
+                  height: 15.0,
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 30.0),
+                  width: 250.0,
+                  child: FlatButton(
+                    onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ImagePainterExample(
-                                  filePath: dirPath,
-                                )),
+                            builder: (context) => ProductCarousel()),
                       );
-                    });
-                  },
-                  child: Text('Image Editor'),
+                    },
+                    child: Text('Slideshow'),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
                 ),
               ],
             ),
